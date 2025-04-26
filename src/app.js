@@ -1,11 +1,9 @@
 const express = require('express');
 
 const mainRouter = require('./routes');
-// const userRoutes = require('./routes/user/user.routes');
-// const authRoutes = require('./routes/auth/auth.routes');
+ 
 const logger = require('./middlewares/logger.middleware'); 
-const  mongoose = require('mongoose') 
-// const authRoutes = require('./routes/auth')
+const  mongoose = require('mongoose')  
 const app = express();
 
 mongoose.connect('mongodb://127.0.0.1:27017/wanderlustTours')
@@ -15,9 +13,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/wanderlustTours')
 
 app.use(express.json());
 app.use(logger);
-
-// router.use('/users', userRoutes);
-// router.use('/auth', authRoutes); 
+ 
 app.use('/api', mainRouter);  
 
 

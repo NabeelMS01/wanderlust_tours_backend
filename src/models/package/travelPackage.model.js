@@ -1,12 +1,9 @@
 const mongoose = require('mongoose');
 
-
-
-
-export   const serviceSchema = new mongoose.Schema({
-    name: String,
-    price: Number
-  }, { _id: true });
+  const serviceSchema = new mongoose.Schema({
+  name: String,
+  price: Number
+}, { _id: true });
 
 const PackageSchema = new mongoose.Schema({
   from: String,

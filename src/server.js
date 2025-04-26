@@ -1,8 +1,16 @@
 require('dotenv').config();
 const app = require('./app');
+const createAdminUser = require('./utils/createAdminUser');
 const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
 
+ 
+const startServer = async () => {
+  await createAdminUser();
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
+
+startServer();
