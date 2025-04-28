@@ -31,7 +31,7 @@ JWT_EXPIRES_IN=7d
 
 ADMIN_EMAIL=admin@wanderlust.com
 ADMIN_PASSWORD=adminPassword123
-MONGO_DB_URL=mongodb://127.0.0.1:27017/wanderlustTours
+MONGO_DB_URL=mongodb+srv://wanderlust:k43IWjSwk2uHy5eB@wanderlusttours.ezai1qf.mongodb.net/wanderlustTours
 
 Replace your_mongodb_connection_string with your MongoDB URI.
 Replace your_secret_key with any strong random string.
