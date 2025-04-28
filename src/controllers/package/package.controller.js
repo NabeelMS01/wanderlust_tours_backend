@@ -1,5 +1,6 @@
-const Package = require('../../models/package/travelPackage.model');
+const { Package } = require("../../models");
 
+ 
 // search & list Packages
 exports.searchPackages = async (req, res) => {
   try {

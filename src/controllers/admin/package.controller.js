@@ -1,62 +1,126 @@
-const Package = require('../../models/package/travelPackage.model');
+ 
+const path = require("path");
+const fs = require("fs");
+const { saveUploadedFile } = require("../../utils/uploadFile");
+ 
+ 
+const { Package } = require("../../models");
 
-// Add Travel Package
 exports.createPackage = async (req, res) => {
   try {
-    const { from, to, startDate, endDate, basePrice, includedServices } = req.body;
+    const { title, from, to, startDate, endDate, basePrice } = req.body;
+    const includedServices = req.body.includedServices || [];
+    const optionalServices = req.body.optionalServices || [];
 
-    const travelPackage = await Package.create({
+    let imageUrl = null;
+
+    if (req.file) {
+      imageUrl = saveUploadedFile(req.file);  
+    }
+
+
+    const newPackage = new Package({
+      title,
       from,
       to,
       startDate,
       endDate,
       basePrice,
       includedServices,
-      createdBy: req.user._id
+      optionalServices,
+      image: imageUrl,    
+      createdBy: req.user._id,
     });
 
-    res.status(201).json({ message: 'Package created successfully', travelPackage });
+    await newPackage.save();
+
+    res.status(201).json({
+      message: "Package created successfully",
+      package: newPackage,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Something went wrong', error });
+    console.error("Error creating package:", error);
+    res.status(500).json({ message: "Something went wrong", error });
   }
 };
 
-// Edit Travel Package
+
+// edit travel package
 exports.updatePackage = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const updatedPackage = await Package.findByIdAndUpdate(id, req.body, { new: true });
+    const packageToUpdate = await Package.findById(id);
 
-    if (!updatedPackage) return res.status(404).json({ message: 'Package not found' });
+    if (!packageToUpdate) {
+      return res.status(404).json({ message: "Package not found" });
+    }
 
-    res.json({ message: 'Package updated successfully', updatedPackage });
+    const {
+      title,
+      from,
+      to,
+      startDate,
+      endDate,
+      basePrice,
+      includedServices,
+      optionalServices,
+    } = req.body;
+
+    // Determine if image is uploaded
+    let imageUrl = packageToUpdate.image; // by default keep old image
+
+    if (req.file) {
+      imageUrl = saveUploadedFile(req.file); // new file uploaded
+    } else if (req.body.existingImage) {
+      imageUrl = req.body.existingImage; // old image passed from frontend
+    }
+
+    // Update all fields
+    packageToUpdate.title = title;
+    packageToUpdate.from = from;
+    packageToUpdate.to = to;
+    packageToUpdate.startDate = startDate;
+    packageToUpdate.endDate = endDate;
+    packageToUpdate.basePrice = basePrice;
+    packageToUpdate.includedServices = includedServices || [];
+    packageToUpdate.optionalServices = optionalServices || [];
+    packageToUpdate.image = imageUrl;
+
+    await packageToUpdate.save();
+
+    res.json({ message: "Package updated successfully", package: packageToUpdate });
   } catch (error) {
-    res.status(500).json({ message: 'Something went wrong', error });
+    console.error("Error updating package:", error);
+    res.status(500).json({ message: "Something went wrong", error });
   }
 };
 
-// Delete Travel Package
+
+// delete travel package
 exports.deletePackage = async (req, res) => {
   try {
     const { id } = req.params;
 
     const deletedPackage = await Package.findByIdAndDelete(id);
 
-    if (!deletedPackage) return res.status(404).json({ message: 'Package not found' });
+    if (!deletedPackage)
+      return res.status(404).json({ message: "Package not found" });
 
-    res.json({ message: 'Package deleted successfully' });
+    res.json({ message: "Package deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Something went wrong', error });
+    console.error("Error deleting package:", error);
+    res.status(500).json({ message: "Something went wrong", error });
   }
 };
 
-// List all Packages
+// list all packages
 exports.listPackages = async (req, res) => {
   try {
-    const packages = await Package.find().populate('createdBy', 'name email');
+    const packages = await Package.find().populate("createdBy", "name email");
     res.json(packages);
   } catch (error) {
-    res.status(500).json({ message: 'Something went wrong', error });
+    console.error("Error listing packages:", error);
+    res.status(500).json({ message: "Something went wrong", error });
   }
 };

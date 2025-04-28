@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { adminOnly, protect } = require('../../middlewares'); 
+const { adminOnly, protect,uploadFile } = require('../../middlewares'); 
 const {
   createPackage,
   updatePackage,
@@ -9,9 +9,9 @@ const {
 } = require('../../controllers/admin/package.controller');
 
 
-// protect and admin only
-router.post('/', protect, adminOnly, createPackage);
-router.put('/:id', protect, adminOnly, updatePackage);
+ 
+router.post('/', protect, adminOnly, uploadFile.single('image'), createPackage);
+router.put('/:id', protect, adminOnly,uploadFile.single('image'), updatePackage);
 router.delete('/:id', protect, adminOnly, deletePackage);
 router.get('/', protect, adminOnly, listPackages);
 
